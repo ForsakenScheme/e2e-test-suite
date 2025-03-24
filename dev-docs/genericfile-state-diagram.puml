@@ -1,0 +1,31 @@
+@startuml
+'https://plantuml.com/state-diagram
+hide empty description
+scale 400 width
+
+title State diagram for\nnavigation from Cryptpad root
+
+note as N1
+Selected paths
+from the Cryptpad
+root.
+end note
+
+[*] -> Root
+
+Root --> PadFile : pad
+Root --> Drive: drive
+
+Drive --> NewFile: new
+
+PadFile --> PadFile: rename
+PadFile --> NewFile : new
+NewFile --> PadFile: pad
+
+PadFile --> Share: share
+Share --> PadFile: copy-\nlink
+
+Chat <- PadFile: chat
+Chat -> PadFile: close
+
+@enduml
