@@ -1,0 +1,51 @@
+@startuml
+'https://plantuml.com/class-diagram
+scale 500 width
+
+title PageObjects for generic file operations
+
+class FilePage {
+    <<loc>> mainFrame
+    <<loc>> newFile
+    <<nav>> newFileClick (): NewFile
+    <<nav>> chatButtonClick(): Chat
+    <<nav>> shareButtonClick(): Share
+}
+
+FilePage <- NewFile: context
+
+class NewFile <<modal>> {
+    <<loc>> close
+    <<loc>> icon(type)
+    <<nav>> create(type): FilePage
+}
+
+Share --> FilePage: context
+
+class Share <<modal>> {
+    <<loc>> shareFrame
+    <<loc>> openButton
+    <<loc>> closeButton
+    <<loc>> copyButton
+    <<loc>> toggle(name)
+    <<nav>> openLink(): FilePage
+}
+
+Chat --> FilePage: context
+
+class Chat <<modal>> {
+    <<loc>> chatInput
+    <<mod>> enterText(text)
+}
+
+RootPage <|-- FilePage
+class "Playwright\nPage" as PWPage
+PWPage <- RootPage: page
+
+class RootPage {
+    toSuccess()
+    toFailure()
+}
+
+
+@enduml
