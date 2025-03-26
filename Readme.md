@@ -14,7 +14,7 @@ To download this repository and install dependencies, run:
 
 ```bash
 git clone https://github.com/cryptpad/e2e-test-suite.git
-cd playwright-tests
+cd e2e-test-suite
 npm install
 npx playwright install
 ```

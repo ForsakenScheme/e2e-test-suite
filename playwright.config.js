@@ -1,5 +1,6 @@
 // const path = require('node:path')
 const { defineConfig, devices } = require('@playwright/test');
+const { isBrowserstackAvailable } = require('./browserstack.config');
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -61,51 +62,37 @@ module.exports = defineConfig({
     trace: 'on-first-retry'
   },
 
-  projects:
-  [
+  projects: [
+    // Non-Browserstack projects first
     {
-      name: 'chrome@latest:OSX Ventura@browserstack',
-      use: {
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        locale: 'en-GB'
-      }
-    }, {
       name: 'chrome',
       use: {
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         locale: 'en-GB'
       }
-    }, {
-      name: 'playwright-firefox@latest:OSX Ventura@browserstack',
-      use: {
-        locale: 'en-GB'
-      }
-    }, {
+    },
+    {
       name: 'playwright-firefox',
       use: {
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         locale: 'en-GB'
       }
-    }, {
-      name: 'edge@latest:OSX Ventura@browserstack',
-      use: {
-        channel: 'msedge',
-        locale: 'en-GB',
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications']
-      }
-    }, {
+    },
+    {
       name: 'edge',
       use: {
         channel: 'msedge',
         locale: 'en-GB',
         permissions: ['clipboard-read', 'clipboard-write', 'notifications']
       }
-    }, {
+    },
+    {
       name: 'playwright-webkit',
       use: {
         locale: 'en-GB'
       }
-    }, {
+    },
+    {
       name: 'chrome@Samsung Galaxy S22:13',
       use: {
         ...devices['Samsung Galaxy S22:13'],
@@ -116,19 +103,8 @@ module.exports = defineConfig({
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         mobile: true
       }
-    }, {
-      name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
-      use: {
-        hasTouch: true,
-        browserName: 'chromium',
-        channel: 'chrome',
-        locale: 'en-GB',
-        permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
-        mobile: true,
-        acceptDownloads: true
-
-      }
-    }, {
+    },
+    {
       name: 'chrome@Galaxy S9+',
       use: {
         ...devices['Galaxy S9+'],
@@ -139,6 +115,42 @@ module.exports = defineConfig({
         permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
         mobile: true
       }
-    }
+    },
+    // Browserstack projects will only be included if credentials are available
+    ...(isBrowserstackAvailable ? [
+      {
+        name: 'chrome@latest:OSX Ventura@browserstack',
+        use: {
+          permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+          locale: 'en-GB'
+        }
+      },
+      {
+        name: 'playwright-firefox@latest:OSX Ventura@browserstack',
+        use: {
+          locale: 'en-GB'
+        }
+      },
+      {
+        name: 'edge@latest:OSX Ventura@browserstack',
+        use: {
+          channel: 'msedge',
+          locale: 'en-GB',
+          permissions: ['clipboard-read', 'clipboard-write', 'notifications']
+        }
+      },
+      {
+        name: 'chrome@Samsung Galaxy S22:13@browserstack-mobile',
+        use: {
+          hasTouch: true,
+          browserName: 'chromium',
+          channel: 'chrome',
+          locale: 'en-GB',
+          permissions: ['clipboard-read', 'clipboard-write', 'notifications'],
+          mobile: true,
+          acceptDownloads: true
+        }
+      }
+    ] : [])
   ]
 });

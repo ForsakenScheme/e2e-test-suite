@@ -1,6 +1,6 @@
 const base = require('@playwright/test');
 const { firefox, chromium, test } = require('@playwright/test');
-const { patchCaps, patchMobileCaps, caps } = require('./browserstack.config.js');
+const { patchCaps, patchMobileCaps, caps, isBrowserstackAvailable } = require('./browserstack.config.js');
 require('dotenv').config();
 const { _android: android } = require('playwright');
 
@@ -21,7 +21,14 @@ exports.test = base.test.extend({
     test.setTimeout(210000);
     browserName = testInfo.project.name.split(/@/)[0];
     loggedin = testInfo.titlePath[0].match(/loggedin/) || testInfo.titlePath[0].match(/signedin/);
-    if (testInfo.project.name.match(/browserstack/)) {
+    
+    // Skip Browserstack tests if credentials are not available
+    if (testInfo.project.name.match(/browserstack/) && !isBrowserstackAvailable) {
+      test.skip(true, 'Browserstack credentials not found or empty in .env file');
+      return;
+    }
+    
+    if (testInfo.project.name.match(/browserstack/) && isBrowserstackAvailable) {
       const mobile = testInfo.project.use.mobile;
       if (mobile) {
         patchMobileCaps(

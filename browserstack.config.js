@@ -7,20 +7,28 @@ const clientPlaywrightVersion = cp
   .split(' ')[1];
 const BrowserStackLocal = require('browserstack-local');
 
-// BrowserStack Specific Capabilities
+// Check if Browserstack credentials are set and not empty
+const isBrowserstackAvailable = !!(
+  process.env.BROWSERSTACK_USERNAME && 
+  process.env.BROWSERSTACK_ACCESS_KEY &&
+  process.env.BROWSERSTACK_USERNAME.trim() !== '' &&
+  process.env.BROWSERSTACK_ACCESS_KEY.trim() !== ''
+);
 
+exports.isBrowserstackAvailable = isBrowserstackAvailable;
+
+// BrowserStack Specific Capabilities
 const caps = {
   name: 'my playwright test',
   build: 'localhost-5',
   'browserstack.username': process.env.BROWSERSTACK_USERNAME,
   'browserstack.accessKey': process.env.BROWSERSTACK_ACCESS_KEY,
-  'browserstack.local': !!process.env.PW_URL.includes('localhost'),
+  'browserstack.local': !!process.env.PW_URL?.includes('localhost'),
   // "browserstack.idleTimeout" : "300",
   'browserstack.playwrightVersion': clientPlaywrightVersion,
   'bstack:options': {
     timezone: 'London'
   }
-
 };
 
 exports.patchMobileCaps = (name, title) => {
@@ -40,7 +48,7 @@ exports.patchMobileCaps = (name, title) => {
 };
 
 exports.caps = caps;
-exports.bsLocal = new BrowserStackLocal.Local();
+exports.bsLocal = isBrowserstackAvailable ? new BrowserStackLocal.Local() : null;
 
 exports.BS_LOCAL_ARGS = {
   key: process.env.BROWSERSTACK_ACCESS_KEY
